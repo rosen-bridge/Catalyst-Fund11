@@ -14,6 +14,7 @@ This document states Rosen Bridge base requirements to support new blockchains a
     - [Event Distinguishability](#event-distinguishability)
     - [Transaction Fee](#transaction-fee)
     - [Data Source](#data-source)
+    - [Unique Requirements to deliver a Working Solution between Cardano and Ethereum](#Unique-Requirements-to-deliver-a-Working-Solution-between-Cardano-and-Ethereum)
 - [Other EVM Chains](#other-evm-chains)
 
 
@@ -76,6 +77,12 @@ Note that although the network fee that is paid in the first stage is based on t
 Other than the requirements, Rosen needs to interact with the blockchain in different stages. Watchers need to scan the network to capture transfer requests. Guards need to verify Watchers reports and also generate and send payment transactions. The interface to fetch the required data is called Data Source and usually RPC and Explorer APIs are used.
 
 For the watcher side, using a personal node is highly recommended and RPC API is supported using the TypeScript `ethers-js` library. For the guard side, supporting multiple data sources is more important. For the start, RPC API is supported and other sources such as explorers and GraphQL APIs will be added along the way. Unfortunately, no explorer nor the RPC supported all the required functionality of the guards and unlike other networks, a scanner is required. Note that this is just a design principle and the scanner requirement of the guards may be solved as the implementation proceeds.
+
+## Unique Requirements to deliver a Working Solution between Cardano and Ethereum
+Since Rosen Bridge is an Ergo-centric bridge and almost all of the logic is being handled on Ergo, there are minimal considerations or requirements to be considered between connected chains, including Cardano and Ethereum/EVM.
+The only constraint that we encountered connecting to Ethereum is that in Ethereum the decimals are 18, and this requires special consideration. 
+
+Based on Rosen's design, we issue the total supply of a token on Ergo and Cardano. Cardano's best practice is 6 decimals (technically it can be higher though) and Ergo supports a maximum of 10^18 tokens, so we cannot issue the Ethereum tokens on Ergo and Cardano considering all of their decimals. Therefore, we're truncating 9 out of 18 decimals of decimals of Ethereum tokens.
 
 ## Other EVM Chains
 The research on the above requirements is done with attention to other EVM networks. The provided solutions apply to other EVM networks, though some of them can be omitted on other networks. For example, Transaction fees don't fluctuate so much in other chains such as Binance and a complex solution for handling fee fluctuation is not necessary and a fixed fee can be used as it's used for Cardano and Ergo.
